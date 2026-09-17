@@ -1,5 +1,5 @@
 langchain-groq
 langchain-core
 python-dotenv
-torch
-transformers
+langchain_openai
+langchain_google_genai 

@@ -579,12 +579,12 @@ DEMOS = {
 def main():
     arg = sys.argv[1] if len(sys.argv) > 1 else "all"
 
-    if ChatGroq is None:
-        print(
-            "langchain_groq isn't installed. Run:\n"
-            "  pip install langchain langchain-groq langchain-core "
-            "--break-system-packages"
-        )
+    # if ChatGroq is None:
+    #     print(
+    #         "langchain_groq isn't installed. Run:\n"
+    #         "  pip install langchain langchain-groq langchain-core "
+    #         "--break-system-packages"
+    # )
     if not HAVE_KEY:
         print(
             "NOTE: GROQ_API_KEY not set. Demos will run with canned "
