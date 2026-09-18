@@ -26,7 +26,7 @@ inventory = {
 @tool
 def check_inventory(product: str, quantity: int = 1) -> str:
     """
-    Check whether a product has enough inventory.
+    Check inventory using a singular product name.
     """
 
     product = product.lower()
@@ -55,7 +55,7 @@ def check_inventory(product: str, quantity: int = 1) -> str:
 @tool
 def get_product_price(product: str) -> str:
     """
-    Get the price of a product.
+    Get the price using a singular product name: mouse, keyboard, laptop, or smartphone.
     """
 
     product = product.lower()
@@ -100,7 +100,7 @@ def list_products() -> str:
 @tool
 def add_stock(product: str, quantity: int) -> str:
     """
-    Add units to a product's stock.
+    Add units using a singular product name: mouse, keyboard, laptop, or smartphone.
     """
 
     product = product.lower()
@@ -136,7 +136,7 @@ def add_stock(product: str, quantity: int) -> str:
 @tool
 def remove_stock(product: str, quantity: int) -> str:
     """
-    Remove units from a product's stock.
+    Remove units using a singular product name: mouse, keyboard, laptop, or smartphone.
     """
 
     product = product.lower()
