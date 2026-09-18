@@ -7,7 +7,9 @@ from langchain_core.messages import (
 )
 
 from model_config import model as llm
-from tools import tools
+
+# from tools import tools
+from file_tools import tools
 
 # Binding Python functions(tools) to the LLM
 llm_with_tools = llm.bind_tools(tools)
@@ -45,28 +47,26 @@ def ask_inventory_assistant(user_input: str):
 
     # Handling the tool calls
     while response.tool_calls:
-        for tool_call in response.tool_calls:
+        tool_call = response.tool_calls[0]
 
-            tool_name = tool_call["name"]
-            tool_args = tool_call["args"]
+        tool_name = tool_call["name"]
+        tool_args = tool_call["args"]
 
-            # print("\nFUNCTION CALL:")
-            # print(f"Function: {tool_name}")
-            # print(f"Arguments: {tool_args}")
+        # print("\nFUNCTION CALL:")
+        # print(f"Function: {tool_name}")
+        # print(f"Arguments: {tool_args}")
 
-            # Finding the corresponding tool function based on the tool name
-            selected_tool = {tool.name: tool for tool in tools}[tool_name]
+        # Finding the corresponding tool function based on the tool name
+        selected_tool = {tool.name: tool for tool in tools}[tool_name]
 
-            # Execute Python function
-            tool_result = selected_tool.invoke(tool_args)
+        # Execute Python function
+        tool_result = selected_tool.invoke(tool_args)
 
-            # print("\nFUNCTION RESULT:")
-            # print(tool_result)
+        # print("\nFUNCTION RESULT:")
+        # print(tool_result)
 
-            # Give result back to LLM
-            messages.append(
-                ToolMessage(content=tool_result, tool_call_id=tool_call["id"])
-            )
+        # Give result back to LLM
+        messages.append(ToolMessage(content=tool_result, tool_call_id=tool_call["id"]))
 
         response = llm_with_tools.invoke(messages)
         # if response.tool_calls:
@@ -74,7 +74,7 @@ def ask_inventory_assistant(user_input: str):
         #     print(json.dumps(response.tool_calls, indent=2))
         messages.append(response)
 
-    print("\nFINAL ANSWER:")
+    print("\nMODEL:")
     print(response.content)
 
     return response.content
