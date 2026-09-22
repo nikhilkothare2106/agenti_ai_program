@@ -5,15 +5,16 @@ from urllib.parse import urlencode
 from urllib.request import urlopen
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AzureOpenAI
 
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.getenv("GROQ_API_KEY"),
-    base_url=os.getenv("OPENAI_BASE_URL", "https://api.groq.com/openai/v1"),
+client = AzureOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
 )
-MODEL = os.getenv("TOOL_CALLING_MODEL", "openai/gpt-oss-20b")
+MODEL = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 WEATHER_API_URL = os.getenv("WEATHER_API_URL")
 
 
@@ -22,9 +23,13 @@ def get_weather(city: str) -> str:
     api_key = os.getenv("WEATHERAPI_KEY")
 
     if not WEATHER_API_URL:
-        return json.dumps({"success": False, "message": "WEATHER_API_URL is not configured"})
+        return json.dumps(
+            {"success": False, "message": "WEATHER_API_URL is not configured"}
+        )
     if not api_key:
-        return json.dumps({"success": False, "message": "WEATHERAPI_KEY is not configured"})
+        return json.dumps(
+            {"success": False, "message": "WEATHERAPI_KEY is not configured"}
+        )
 
     url = f"{WEATHER_API_URL}?{urlencode({'key': api_key, 'q': city.strip()})}"
 
@@ -32,7 +37,9 @@ def get_weather(city: str) -> str:
         with urlopen(url, timeout=10) as response:
             weather_data = json.load(response)
     except HTTPError as error:
-        return json.dumps({"success": False, "status_code": error.code, "message": error.reason})
+        return json.dumps(
+            {"success": False, "status_code": error.code, "message": error.reason}
+        )
     except (URLError, TimeoutError) as error:
         return json.dumps({"success": False, "message": str(error)})
 
@@ -71,34 +78,39 @@ tools = [
 def ask_weather(user_query):
     messages = [{"role": "user", "content": user_query}]
 
-    while True:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=messages,
-            tools=tools,
-            tool_choice="auto",
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=messages,
+        tools=tools,
+        tool_choice="auto",
+    )
+    message = response.choices[0].message
+    messages.append(message)
+
+    if not message.tool_calls:
+        return message.content
+
+    for tool_call in message.tool_calls:
+        function = tool_functions.get(tool_call.function.name)
+        if function is None:
+            result = json.dumps({"success": False, "message": "Unknown tool"})
+        else:
+            arguments = json.loads(tool_call.function.arguments)
+            result = function(**arguments)
+
+        messages.append(
+            {
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": result,
+            }
         )
-        message = response.choices[0].message
-        messages.append(message)
 
-        if not message.tool_calls:
-            return message.content
-
-        for tool_call in message.tool_calls:
-            function = tool_functions.get(tool_call.function.name)
-            if function is None:
-                result = json.dumps({"success": False, "message": "Unknown tool"})
-            else:
-                arguments = json.loads(tool_call.function.arguments)
-                result = function(**arguments)
-
-            messages.append(
-                {
-                    "role": "tool",
-                    "tool_call_id": tool_call.id,
-                    "content": result,
-                }
-            )
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=messages,
+    )
+    return response.choices[0].message.content
 
 
 if __name__ == "__main__":

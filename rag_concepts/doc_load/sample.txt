@@ -1,0 +1,83 @@
+AI AND MACHINE LEARNING – QUICK NOTES
+
+Artificial Intelligence (AI)
+
+Artificial Intelligence, or AI, is the broader field of computer science focused on creating systems that can perform tasks that normally require human intelligence. These tasks include understanding language, recognizing images, making decisions, solving problems, planning, learning from experience, and generating content. Examples of AI applications include virtual assistants, recommendation systems, autonomous vehicles, chatbots, fraud detection systems, and generative AI tools.
+
+Machine Learning (ML)
+
+Machine Learning is a subset of Artificial Intelligence. Instead of explicitly programming a computer with rules for every possible situation, machine learning allows a system to learn patterns from data and use those patterns to make predictions or decisions. In traditional programming, we provide rules and data to get an output. In machine learning, we provide data and, depending on the type of learning, expected outputs, and the system learns a model that can later be used on new data.
+
+A typical machine learning process starts with collecting data, cleaning and preparing the data, exploring the data, selecting useful features, splitting the data into training and testing sets, training a model, evaluating its performance, tuning the model, and finally deploying and monitoring it.
+
+Supervised Learning
+
+Supervised learning is a type of machine learning in which the model learns from labeled data. Labeled data means that the input data already has a known or expected output, called a label or target. The model learns the relationship between the input features and the target so that it can predict the target for new, unseen data.
+
+For example, suppose we have information about houses such as area, number of bedrooms, location, and age. If the actual price of each house is also provided, the model can learn the relationship between these features and the house price. Later, it can predict the price of a new house.
+
+Supervised learning is mainly divided into two categories: classification and regression. Classification is used when the output is a category or class. Examples include detecting whether an email is spam or not spam, predicting whether a transaction is fraudulent, and classifying an image as a cat or dog. Common classification algorithms include Logistic Regression, Decision Trees, Random Forest, Support Vector Machines, K-Nearest Neighbors, and Neural Networks.
+
+Regression is used when the output is a continuous numerical value. Examples include predicting house prices, sales amounts, temperature, or delivery time. Common regression algorithms include Linear Regression, Decision Tree Regression, Random Forest Regression, Gradient Boosting, and Neural Networks.
+
+The main idea of supervised learning is: the model learns from examples where the correct answer is already known.
+
+Unsupervised Learning
+
+Unsupervised learning is a type of machine learning where the input data does not have predefined labels or expected outputs. The model tries to discover hidden patterns, structures, relationships, or groups within the data by itself.
+
+One common unsupervised learning technique is clustering. Clustering groups similar data points together. For example, an e-commerce company can use customer purchase behavior to automatically divide customers into different groups, even when the company does not already know what those groups should be. K-Means, DBSCAN, and Hierarchical Clustering are common clustering algorithms.
+
+Another important technique is dimensionality reduction. It reduces the number of features in a dataset while trying to preserve the most important information. It can be useful for visualization, removing redundant information, and simplifying complex datasets. PCA, t-SNE, and UMAP are commonly used techniques.
+
+The main idea of unsupervised learning is: the model receives data without predefined answers and tries to find meaningful patterns or structures.
+
+Semi-Supervised Learning
+
+Semi-supervised learning combines supervised and unsupervised learning. It uses a small amount of labeled data together with a large amount of unlabeled data. This approach is useful when obtaining labels is expensive or requires human effort. For example, a company may have 10,000 images but only 500 of them have been manually labeled. The remaining unlabeled images can still provide useful information during model training.
+
+Reinforcement Learning
+
+Reinforcement Learning, or RL, is a type of machine learning in which an agent learns by interacting with an environment. The agent takes actions and receives rewards or penalties based on those actions. Over time, it learns a strategy, called a policy, that helps it achieve better long-term results.
+
+For example, a game-playing AI can choose an action, observe what happens, and receive a reward when the action helps it win. Important reinforcement learning concepts include the agent, environment, action, reward, and policy. Reinforcement learning is commonly used in games, robotics, recommendation strategies, and optimization problems.
+
+Deep Learning
+
+Deep Learning is a subset of machine learning that uses artificial neural networks with multiple layers. These networks can automatically learn complex patterns from large amounts of data. Deep learning is especially useful for images, audio, video, natural language, and other high-dimensional data.
+
+Convolutional Neural Networks (CNNs) are commonly associated with image-related tasks. Recurrent Neural Networks (RNNs) and LSTMs were widely used for sequence and time-series problems. Transformers are modern neural network architectures that are widely used for language, vision, multimodal systems, and generative AI.
+
+Generative AI
+
+Generative AI refers to AI systems that can create new content based on patterns learned from their training data. They can generate text, code, images, audio, and video. Large Language Models (LLMs) are a major type of generative AI model designed to understand and generate human language. Chatbots, coding assistants, text generation, document summarization, and question answering are examples of LLM applications.
+
+AI, ML, Deep Learning, and Generative AI
+
+AI is the broad field concerned with creating intelligent systems. Machine Learning is a subset of AI that enables systems to learn patterns from data. Deep Learning is a subset of machine learning that primarily uses multi-layer neural networks. Generative AI is an application/capability area focused on generating new content and commonly uses deep learning models.
+
+A simple way to remember the relationship is:
+
+Artificial Intelligence
+    ↓
+Machine Learning
+    ↓
+Deep Learning
+    ↓
+Many modern Generative AI systems
+
+However, Generative AI is not simply another strict level below Deep Learning. It is better understood as a capability or application area that frequently uses deep-learning models.
+
+Important Machine Learning Terms
+
+A feature is an input variable used by a machine learning model. For example, when predicting house prices, area, number of bedrooms, and location can be features. A label or target is the value that the model is trying to predict, such as the house price.
+
+Training data is the data used by the model to learn patterns and parameters. Validation data is commonly used during development to compare models and tune settings. Test data is unseen data used to evaluate how well the final model performs on new examples.
+
+A model is the learned mathematical representation of patterns in the training data. Training is the process of learning those patterns. Inference is the process of using a trained model to make a prediction or generate an output for new input.
+
+Overfitting occurs when a model learns the training data too closely, including noise or specific details, and therefore performs poorly on new data. Underfitting occurs when a model is too simple to capture important patterns in the data.
+
+Simple Real-World Example
+
+Consider an e-commerce company. If the company wants to predict whether a customer will purchase a product, it can use supervised classification. If it wants to automatically divide customers into groups based on their behavior, it can use unsupervised clustering. If it wants to learn which recommendation strategy produces better long-term results, it can use reinforcement learning. If it wants to automatically generate product descriptions, it can use generative AI.

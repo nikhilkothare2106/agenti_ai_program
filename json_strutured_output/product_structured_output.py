@@ -1,6 +1,17 @@
+import os
+
+from dotenv import load_dotenv
+from openai import AzureOpenAI
 from pydantic import BaseModel, Field
 
-from model_config import model
+load_dotenv()
+
+client = AzureOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+)
+Model = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 
 class Product(BaseModel):
     name: str = Field(description="Name of the product")
@@ -8,13 +19,19 @@ class Product(BaseModel):
     quantity: int = Field(description="Available quantity of the product")
 
 
-structured_model = model.with_structured_output(Product)
 
-
-product = structured_model.invoke(
-    "Extract the product details from this text: "
-    "Wireless Keyboard costs rs 49.99 and there are 25 units available."
+response = client.beta.chat.completions.parse(
+    model=Model,
+    messages=[
+        {
+            "role": "user",
+            "content": "Generate the name, price and quantity of a fictional Indian product.",
+        }
+    ],
+    response_format=Product,
 )
+
+product = response.choices[0].message.parsed
 
 print(product)
 print(product.model_dump_json(indent=2))
