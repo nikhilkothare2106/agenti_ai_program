@@ -1,3 +1,4 @@
+langchain
 langchain-groq
 langchain-core
 langchain_community
@@ -5,3 +6,15 @@ python-dotenv
 pydantic
 pypdf
 langchain-classic
+langchain-text-splitters
+openai
+tiktoken
+langchain_openai
+chromadb
+langchain-chroma
+langchain-google-genai
+langchain-milvus
+pymilvus[milvus_lite]
+milvus-lite
+tiktoken
+json-repair

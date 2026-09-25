@@ -73,11 +73,6 @@ def demo_tokenization():
     print("Sample text:")
     print(wrap(sample))
 
-    # Groq's chat completions API doesn't expose a dedicated token-count
-    # endpoint the way Anthropic's does. LangChain's get_num_tokens()
-    # falls back to a tiktoken-based estimate, which is NOT the actual
-    # tokenizer Llama/Mixtral models use on Groq's backend -- treat it
-    # as an approximation, not ground truth.
     if HAVE_KEY:
         try:
             chat = get_chat()

@@ -20,7 +20,7 @@ class Product(BaseModel):
 
 
 
-response = client.beta.chat.completions.parse(
+response = client.chat.completions.parse(
     model=Model,
     messages=[
         {
@@ -31,7 +31,20 @@ response = client.beta.chat.completions.parse(
     response_format=Product,
 )
 
+# response = client.chat.completions.create(
+#     model=Model,
+#     messages=[
+#         {
+#             "role": "user",
+#             "content": "Generate the name, price and quantity of a fictional Indian product in json format.",
+#         }
+#     ],
+#     response_format={
+#         "type": "json_object"},
+# )
+
 product = response.choices[0].message.parsed
+# product = response.choices[0].message.content
 
 print(product)
 print(product.model_dump_json(indent=2))

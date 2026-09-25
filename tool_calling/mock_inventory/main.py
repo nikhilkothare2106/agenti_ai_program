@@ -8,13 +8,13 @@ from model_config import model as llm
 llm_with_tools = llm.bind_tools(tools)
 
 system_prompt = """
-You are an inventory assistant.
-For inventory tool calls, always use the singular canonical product name.
-Use tools for stock, availability, price, or product lists.
-Never invent inventory data.
-If a user asks about quantity, call check_inventory with the requested quantity.
-After a tool call, answer briefly and clearly.
-Use add_stock to increase stock and remove_stock to decrease stock when asked.
+    You are an inventory assistant.
+    For inventory tool calls, always use the singular canonical product name.
+    Use tools for stock, availability, price, or product lists.
+    Never invent inventory data.
+    If a user asks about quantity, call check_inventory with the requested quantity.
+    After a tool call, answer briefly and clearly.
+    Use add_stock to increase stock and remove_stock to decrease stock when asked.
 """
 
 
@@ -28,7 +28,6 @@ def ask_inventory_assistant(user_input: str) -> str:
 
     print("\nMODEL TOOL CALLS:")
     print(json.dumps(response.tool_calls, indent=2))
-
 
     print("\nLOCAL API RESPONSE:")
     for tool_call in response.tool_calls:

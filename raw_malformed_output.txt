@@ -1,0 +1,32 @@
+Here's the extracted invoice data in JSON format based on the provided details:
+
+```json
+{
+  "vendor": "Blue Ridge Office Supplies LLC",
+  "invoice_number": "BR-2024-00931",
+  "line_items": [
+    {
+      "description": "Ergonomic desk chair",
+      "quantity": "2",
+      "unit_price": 189.99
+    },
+    {
+      "description": "Monitor stand (dual)",
+      "quantity": "3",
+      "unit_price": 45.50
+    },
+    {
+      "description": "USB-C hub, 7-port",
+      "quantity": "5",
+      "unit_price": 22.00
+    }
+  ],
+  "subtotal": 716.48,
+  "tax_amount": 53.74,
+  "total_amount": 770.22,
+  "currency": "USD",
+  "notes": "This JSON captures all key invoice details accurately."
+}
+```
+
+This JSON structure neatly organizes all the relevant invoice information for easy processing.

@@ -219,3 +219,5 @@ __marimo__/
 
 
 azure_openai_quickstart 1.ipynb
+azure_openai_embeddings_quickstart 2.ipynb
+milvus_db
