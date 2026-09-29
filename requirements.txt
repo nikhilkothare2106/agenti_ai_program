@@ -18,3 +18,14 @@ pymilvus[milvus_lite]
 milvus-lite
 tiktoken
 json-repair
+matplotlib
+pandas
+seaborn
+scikit-learn
+rank-bm25 
+sentence-transformers 
+numpy
+faiss-cpu
+rank_bm25
+langchain-unstructured[local]
+ragas==0.4.3
