@@ -1,0 +1,18 @@
+{
+    "mouse": {
+        "stock": 25,
+        "price": 25
+    },
+    "keyboard": {
+        "stock": 30,
+        "price": 60
+    },
+    "laptop": {
+        "stock": 22,
+        "price": 899
+    },
+    "smartphone": {
+        "stock": 14,
+        "price": 499
+    }
+}
