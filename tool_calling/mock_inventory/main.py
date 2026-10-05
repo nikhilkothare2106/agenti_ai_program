@@ -30,15 +30,20 @@ def ask_inventory_assistant(user_input: str) -> str:
     print(json.dumps(response.tool_calls, indent=2))
 
     print("\nLOCAL API RESPONSE:")
-    for tool_call in response.tool_calls:
-        selected_tool = {tool.name: tool for tool in tools}[tool_call["name"]]
 
-        tool_result = selected_tool.invoke(tool_call["args"])
-        print(f"\n{tool_call['name']}: {tool_result}")
+    while response.tool_calls:
+        for tool_call in response.tool_calls:
+            selected_tool = {tool.name: tool for tool in tools}[tool_call["name"]]
 
-        messages.append(ToolMessage(content=tool_result, tool_call_id=tool_call["id"]))
+            tool_result = selected_tool.invoke(tool_call["args"])
+            print(f"\n{tool_call['name']}: {tool_result}")
 
-    response = llm_with_tools.invoke(messages)
+            messages.append(
+                ToolMessage(content=tool_result, tool_call_id=tool_call["id"])
+            )
+
+        response = llm_with_tools.invoke(messages)
+
     print("\nFINAL ANSWER:")
     print(response.content)
     return response.content

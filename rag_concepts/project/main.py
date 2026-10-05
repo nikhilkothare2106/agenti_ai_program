@@ -128,7 +128,7 @@ def main() -> None:
     while True:
         try:
             user_query = input("\nYou: ").strip()
-        except (Exception):
+        except Exception:
             print()
             break
         if not user_query:
