@@ -25,16 +25,17 @@ def ask_weather_assistant(user_input: str) -> str:
     print("\nMODEL TOOL CALLS:")
     print(json.dumps(response.tool_calls, indent=2))
 
-    for tool_call in response.tool_calls:
-        selected_tool = {tool.name: tool for tool in tools}[tool_call["name"]]
+    while response.tool_calls:
+        for tool_call in response.tool_calls:
+            selected_tool = {tool.name: tool for tool in tools}[tool_call["name"]]
 
-        tool_result = selected_tool.invoke(tool_call["args"])
-        print("\nLOCAL API RESPONSE:")
-        print(f"\n{tool_call['name']}: {tool_result}")
+            tool_result = selected_tool.invoke(tool_call["args"])
+            print("\nLOCAL API RESPONSE:")
+            print(f"\n{tool_call['name']}: {tool_result}")
 
-        messages.append(ToolMessage(content=tool_result, tool_call_id=tool_call["id"]))
+            messages.append(ToolMessage(content=tool_result, tool_call_id=tool_call["id"]))
+        response = llm_with_tools.invoke(messages)
 
-    response = llm_with_tools.invoke(messages)
     print("\nFINAL ANSWER:")
     print(response.content)
     return response.content

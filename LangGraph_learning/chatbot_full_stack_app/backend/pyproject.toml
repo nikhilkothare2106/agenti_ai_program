@@ -1,0 +1,27 @@
+[project]
+name = "agentcore-chat-backend"
+version = "0.1.0"
+description = "FastAPI backend wrapping the boto3 bedrock-agentcore invoke_agent_runtime call"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi==0.115.0",
+    "uvicorn[standard]==0.30.6",
+    "boto3>=1.40.0",
+    "botocore>=1.40.0",
+    "python-dotenv==1.0.1",
+    "pydantic==2.9.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.2",
+    "httpx==0.27.2",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["app"]

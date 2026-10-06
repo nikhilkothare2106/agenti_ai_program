@@ -31,4 +31,6 @@ langchain-unstructured[local]
 # ragas 0.4.3 depends on scikit-network, which does not support Python 3.14+
 ragas==0.4.3; python_version < "3.13"
 bedrock_agentcore
-bedrock-agentcore-starter-toolkit
+# bedrock-agentcore-starter-toolkit
+ddgs
+langchain_mcp_adapters

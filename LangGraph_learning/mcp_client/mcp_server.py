@@ -1,18 +1,19 @@
-import json
+from mcp.server.fastmcp import FastMCP
 import os
+import json
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
+mcp = FastMCP("arith")
 
 from dotenv import load_dotenv
-from langchain_core.tools import tool
 
 load_dotenv()
 
 WEATHER_API_URL = os.getenv("WEATHER_API_URL")
 
 
-@tool
+@mcp.tool()
 def get_current_weather(city: str) -> str:
     """Get the current weather for a city."""
 
@@ -62,4 +63,7 @@ def get_current_weather(city: str) -> str:
     )
 
 
-tools = [get_current_weather]
+if __name__ == "__main__":
+    # Runs over stdio by default, matching the "stdio" transport
+    # configured in your MultiServerMCPClient
+    mcp.run(transport="stdio")
