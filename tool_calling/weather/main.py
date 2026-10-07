@@ -33,7 +33,9 @@ def ask_weather_assistant(user_input: str) -> str:
             print("\nLOCAL API RESPONSE:")
             print(f"\n{tool_call['name']}: {tool_result}")
 
-            messages.append(ToolMessage(content=tool_result, tool_call_id=tool_call["id"]))
+            messages.append(
+                ToolMessage(content=tool_result, tool_call_id=tool_call["id"])
+            )
         response = llm_with_tools.invoke(messages)
 
     print("\nFINAL ANSWER:")
