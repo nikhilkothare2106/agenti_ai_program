@@ -2,7 +2,7 @@ import json
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.errors import GraphRecursionError
 from langchain.agents import create_agent
-
+from callbacks import LoggingHandler
 from file_tools import tools
 from model_config import model as llm
 
@@ -42,6 +42,7 @@ def text_of(message) -> str:
         b.get("text", "") for b in c if isinstance(b, dict) and b.get("type") == "text"
     )
 
+
 def ask_inventory_assistant(user_input: str) -> str:
     """Send a user query to the inventory agent and return the final response text."""
 
@@ -50,6 +51,7 @@ def ask_inventory_assistant(user_input: str) -> str:
     config = {
         "configurable": {"thread_id": "nikhil"},
         "recursion_limit": MAX_STEPS,
+        "callbacks": [LoggingHandler()],
     }
 
     try:
@@ -65,8 +67,8 @@ def ask_inventory_assistant(user_input: str) -> str:
         return FALLBACK_RESPONSE
 
     final_response = text_of(messages[-1])
+    print("\nINVENTORY ASSISTANT RESPONSE:")
     print(final_response)
-    return final_response
 
     # The commented blocks below show alternative streaming/debug approaches for learning and inspection.
     # for chunk in agent.stream(
@@ -118,5 +120,4 @@ if __name__ == "__main__":
         print("\nUSER QUERY:")
         print(user_input)
 
-        print("\nINVENTORY ASSISTANT RESPONSE:")
         ask_inventory_assistant(user_input)

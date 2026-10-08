@@ -28,7 +28,7 @@ merge_chain = prompt3 | model1 | parser
 chain = parallel_chain | merge_chain
 
 
-text = """
+text = """ssss
 taj mahal
 """
 

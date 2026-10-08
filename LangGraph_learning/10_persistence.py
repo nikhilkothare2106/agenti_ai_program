@@ -40,55 +40,98 @@ checkpointer = InMemorySaver()
 
 workflow = graph.compile(checkpointer=checkpointer)
 config1 = {"configurable": {"thread_id": "1"}}
-workflow.invoke({"topic": "pizza"}, config=config1)
-workflow.get_state(config1)
-list(workflow.get_state_history(config1))
-workflow.get_state(
-    {
-        "configurable": {
-            "thread_id": "1",
-            "checkpoint_id": "1f19612e-024a-620c-8001-7ba0df6f018f",
+
+print("\n=== Starting joke generation workflow ===")
+print("Invoking workflow with topic='pizza'")
+result_1 = workflow.invoke({"topic": "pizza"}, config=config1)
+print("First workflow result:")
+print(result_1)
+
+print("\nCurrent state after first invoke:")
+print(workflow.get_state(config1))
+
+print("\nState history after first invoke:")
+history = list(workflow.get_state_history(config1))
+for entry in history:
+    print(entry, "\n")
+
+latest_configurable = history[-2].config.get("configurable") or {}
+checkpoint_id = latest_configurable.get("checkpoint_id")
+if checkpoint_id is None:
+    raise ValueError("No checkpoint_id found in the latest workflow history entry.")
+
+print(f"\nUsing checkpoint_id from latest history state: {checkpoint_id}")
+print(
+    workflow.get_state(
+        {
+            "configurable": {
+                "thread_id": "1",
+                "checkpoint_id": checkpoint_id,
+            }
         }
-    }
+    )
 )
-workflow.invoke(
+
+print("\nRe-invoking workflow with checkpoint resume:")
+resume_result = workflow.invoke(
     None,
     {
         "configurable": {
             "thread_id": "1",
-            "checkpoint_id": "1f19612e-024a-620c-8001-7ba0df6f018f",
+            "checkpoint_id": checkpoint_id,
         }
     },
 )
-# list(workflow.get_state_history(config1))
+print(resume_result)
 
+print("\nHistory after resume invoke:")
 for i in workflow.get_state_history(config1):
     print(i, "\n")
-workflow.update_state(
-    {
-        "configurable": {
-            "thread_id": "1",
-            "checkpoint_id": "1f19612d-fd2d-655f-bfff-b4904beafe15",
-            "checkpoint_ns": "",
-        }
-    },
-    {"topic": "samosa"},
-)
-history = list(workflow.get_state_history(config1))
 
+print("\nUpdating state with new topic='samosa'")
+last_history_state = list(workflow.get_state_history(config1))[-1]
+last_configurable = last_history_state.config.get("configurable") or {}
+last_checkpoint_id = last_configurable.get("checkpoint_id")
+if last_checkpoint_id is None:
+    raise ValueError("No checkpoint_id found for the state update.")
+
+update_config = {
+    "configurable": {
+        "thread_id": "1",
+        "checkpoint_id": last_checkpoint_id,
+        "checkpoint_ns": last_configurable.get("checkpoint_ns", ""),
+    }
+}
+workflow.update_state(update_config, {"topic": "samosa"})
+
+history = list(workflow.get_state_history(config1))
+print("Updated state history in reverse order:")
 for k, i in enumerate(range(len(history) - 1, -1, -1)):
     print(k, " ", history[i], "\n")
-workflow.invoke(
+
+print("\nFinal workflow invoke after state update:")
+final_history_state = list(workflow.get_state_history(config1))[-1]
+final_checkpoint_id = (final_history_state.config.get("configurable") or {}).get(
+    "checkpoint_id"
+)
+if final_checkpoint_id is None:
+    raise ValueError("No checkpoint_id found for the final resume invocation.")
+
+final_result = workflow.invoke(
     None,
     {
         "configurable": {
             "thread_id": "1",
-            "checkpoint_id": "1f196132-dfe6-65a5-8000-9176d4598d3d",
+            "checkpoint_id": final_checkpoint_id,
         }
     },
 )
+print(final_result)
 
-list(workflow.get_state_history(config1))
+print("\nFull final state history:")
+for state in workflow.get_state_history(config1):
+    print(state)
+
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import InMemorySaver
 from typing import TypedDict
@@ -135,14 +178,23 @@ builder.add_edge("step_3", END)
 checkpointer = InMemorySaver()
 graph = builder.compile(checkpointer=checkpointer)
 try:
-    print("▶️ Running graph: Please manually interrupt during Step 2...")
+    print("\n▶️ Running crash graph: Please manually interrupt during Step 2...")
     graph.invoke({"input": "start"}, config={"configurable": {"thread_id": "thread-1"}})
 except KeyboardInterrupt:
     print("❌ Kernel manually interrupted (crash simulated).")
-graph.get_state({"configurable": {"thread_id": "thread-1"}})
-list(graph.get_state_history({"configurable": {"thread_id": "thread-1"}}))
+
+print("\nCurrent state after crash simulation:")
+print(graph.get_state({"configurable": {"thread_id": "thread-1"}}))
+
+print("\nState history after crash simulation:")
+for entry in graph.get_state_history({"configurable": {"thread_id": "thread-1"}}):
+    print(entry)
+
 # 6. Re-run to show fault-tolerant resume
 print("\n🔁 Re-running the graph to demonstrate fault tolerance...")
 final_state = graph.invoke(None, config={"configurable": {"thread_id": "thread-1"}})
 print("\n✅ Final State:", final_state)
-list(graph.get_state_history({"configurable": {"thread_id": "thread-1"}}))
+
+print("\nState history after resume:")
+for entry in graph.get_state_history({"configurable": {"thread_id": "thread-1"}}):
+    print(entry)

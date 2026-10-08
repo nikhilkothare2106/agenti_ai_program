@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 
 from model_config import model
 
+
 class Product(BaseModel):
     name: str = Field(description="Name of the product")
     price: float = Field(description="Price of the product")

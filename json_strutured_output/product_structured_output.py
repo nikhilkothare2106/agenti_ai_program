@@ -47,4 +47,5 @@ product = response.choices[0].message.parsed
 # product = response.choices[0].message.content
 
 print(product)
-print(product.model_dump_json(indent=2))
+if product is not None:
+    print(product.model_dump_json(indent=2))

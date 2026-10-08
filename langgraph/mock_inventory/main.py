@@ -1,4 +1,3 @@
-from typing import Annotated, TypedDict
 from langchain_core.messages import (
     BaseMessage,
     HumanMessage,
@@ -7,17 +6,19 @@ from langchain_core.messages import (
 )
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import InMemorySaver
-from langgraph.errors import GraphRecursionError
-from langgraph.graph import START, StateGraph
-from langgraph.graph.message import add_messages
+from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.types import RetryPolicy
+from langgraph.types import RetryPolicy, Command
 
+from chat_state import ChatState
 from file_tools import tools
+from hitl import approval_node
 from model_config import model as llm
 
-MAX_STEPS = 10
+MAX_TURNS = 5
+MAX_STEPS = 2 * MAX_TURNS + 1
 MAX_RETRIES = 3
+FALLBACK_RESPONSE = "I couldn't complete that request. Please try again or rephrase it."
 
 checkpointer = InMemorySaver()
 
@@ -33,10 +34,6 @@ SYSTEM_PROMPT = """
     After a tool call, answer briefly and clearly.
     Use add_stock to increase stock and remove_stock to decrease stock when asked.
 """.strip()
-
-
-class ChatState(TypedDict):
-    messages: Annotated[list[BaseMessage], add_messages]
 
 
 def chat_node(state: ChatState):
@@ -55,8 +52,7 @@ def chat_node(state: ChatState):
     return {"messages": [response]}
 
 
-# Tool exceptions go back to the model as a ToolMessage instead of crashing the run
-tool_node = ToolNode(tools)
+tool_node = ToolNode(tools, handle_tool_errors=True)
 
 graph = StateGraph(ChatState)
 graph.add_node(
@@ -78,8 +74,12 @@ graph.add_node(
     ),
 )
 
+graph.add_node("approval", approval_node)
+
 graph.add_edge(START, "chat_node")
-graph.add_conditional_edges("chat_node", tools_condition)
+graph.add_conditional_edges(
+    "chat_node", tools_condition, {"tools": "approval", "__end__": END}
+)
 graph.add_edge("tools", "chat_node")
 chatbot = graph.compile(checkpointer=checkpointer)
 
@@ -89,20 +89,71 @@ config: RunnableConfig = {
 }
 
 
-def ask_inventory_assistant(user_input: str) -> str:
+def text_of(message) -> str:
+    """Return plain text from a message or chunk, whatever shape `content` has."""
+    c = message.content
+    if isinstance(c, str):
+        return c
+    # content is a list of blocks
+    return "".join(
+        b.get("text", "") for b in c if isinstance(b, dict) and b.get("type") == "text"
+    )
+
+
+def print_trace(messages: list[BaseMessage]) -> None:
+    """Print observable tool decisions and results for the latest user turn."""
+    latest_user_message = max(
+        index for index, message in enumerate(messages) if message.type == "human"
+    )
+    print("\nTrace:")
+    for index, message in enumerate(
+        messages[latest_user_message:], start=latest_user_message
+    ):
+        if message.type == "human":
+            print(f"  user: {message.content}")
+        elif getattr(message, "tool_calls", None):
+            for tool_call in message.tool_calls:
+                print(f"  tool call: {tool_call['name']}({tool_call['args']})")
+        elif message.type == "tool":
+            print(f"  tool result ({message.name}): {message.content}")
+        elif message.type == "ai" and index == len(messages) - 1:
+            print(f"  assistant: {message.content}")
+
+
+def ask_inventory_assistant(user_input: str, debug_trace: bool = True) -> str:
     """Send a user query through the inventory agent and return the final answer."""
+    answer_parts = []
     try:
+
         result = chatbot.invoke(
             {"messages": [HumanMessage(content=user_input)]}, config=config
         )
-        answer = result["messages"][-1].content
-    except GraphRecursionError:
-        answer = "I couldn't complete that request in a reasonable number of steps. Please try rephrasing it."
-    except Exception as e:
-        # Raised after all LLM retries are exhausted
-        answer = f"Something went wrong while processing your request: {e}"
-    print(answer)
-    return answer
+
+        # Graph paused at approval: ask the human, then resume until it finishes
+        while "__interrupt__" in result:
+            payload = result["__interrupt__"][0].value
+            print(f"\n{payload['question']} \n {payload['tool_calls']} \n yes/no?")
+            answer = input("> ").strip().lower()
+            result = chatbot.invoke(Command(resume=answer), config=config)
+
+        if debug_trace:
+            print_trace(result["messages"])
+
+        # for token, metadata in chatbot.stream(
+        #     {"messages": [("user", user_input)]},
+        #     stream_mode="messages",
+        #     config=config,
+        # ):
+        #     if metadata["langgraph_node"] == "chat_node":
+        #         text = text_of(token)
+        #         if text:
+        #             answer_parts.append(text)
+        #             if debug_trace:
+        #                 print(text, end="", flush=True)
+
+    except Exception as error:
+        if debug_trace:
+            print(f"Trace stopped: {type(error).__name__}: {error}")
 
 
 if __name__ == "__main__":
