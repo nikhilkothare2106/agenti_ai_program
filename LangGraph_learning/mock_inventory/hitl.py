@@ -1,7 +1,7 @@
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command, interrupt
 
-from chat_state import ChatState
+from langgraph_learning.mock_inventory.chat_state import ChatState
 
 SENSITIVE_TOOLS = {"add_stock", "remove_stock"}
 

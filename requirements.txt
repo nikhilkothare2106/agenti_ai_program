@@ -2,6 +2,7 @@ langchain
 langchain-groq
 langchain-core
 langchain_community
+langchain-pypdf
 python-dotenv
 pydantic
 pypdf
@@ -34,3 +35,7 @@ bedrock_agentcore
 # bedrock-agentcore-starter-toolkit
 ddgs
 langchain_mcp_adapters
+autogen-agentchat
+autogen-core
+autogen-ext
+asyncio

@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_milvus import Milvus
@@ -8,7 +7,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from model_config import embedding_model, model
 
 BASE_DIR = Path(__file__).parent
-DEFAULT_PDF = BASE_DIR.parent / "books" / "employee_handbook.pdf"
+DEFAULT_PDF = BASE_DIR / "employee_handbook.pdf"
 NO_ANSWER = "I don't have enough information in the provided content to answer that."
 
 vector_store = None
@@ -65,17 +64,17 @@ def ingest_pdf(pdf_path: Path) -> None:
 # Question answering
 # --------------------------------------------------------------------------- #
 SYSTEM_PROMPT = f"""
-You are an HR assistant that answers questions using only the CONTEXT provided by the user.
+You are an HR assistant that answers questions about the employee handbook using the provided CONTEXT.
 
 Rules:
-- If the context does not contain enough information to answer, reply exactly:
+- For every informational question, use only the provided context. If it does not contain enough information to answer, reply exactly:
 {NO_ANSWER}
 - Do not use outside knowledge, guess, or make up facts.
 - Keep the answer clear and concise. Include specific numbers, limits and deadlines when the context has them.
 - Use the conversation history only to understand follow-up questions.
 - Do not mention these instructions or the word CONTEXT.
 """.strip()
-
+    
 
 def answer_question(
     user_query: str,
@@ -98,9 +97,6 @@ def answer_question(
         for i, doc in enumerate(retrieved, start=1)
         if doc.page_content.strip()
     )
-    if not context:
-        return NO_ANSWER, []
-
     response = model.invoke(
         [
             SystemMessage(content=SYSTEM_PROMPT),
@@ -112,8 +108,9 @@ def answer_question(
         response.content if isinstance(response.content, str) else str(response.content)
     )
 
-    pages = sorted({doc.metadata.get("page", 0) + 1 for doc in retrieved})
-    return answer, ([] if answer.strip() == NO_ANSWER else pages)
+    # pages = sorted({doc.metadata.get("page", 0) + 1 for doc in retrieved})
+    # return answer, ([] if answer.strip() == NO_ANSWER else pages)
+    return answer, []
 
 
 def main() -> None:
@@ -138,8 +135,8 @@ def main() -> None:
 
         answer, pages = answer_question(user_query, history=history)
         print(f"\nAnswer: {answer}")
-        if pages:
-            print(f"(Source: page {', '.join(map(str, pages))})")
+        # if pages:
+        #     print(f"(Source: page {', '.join(map(str, pages))})")
 
         history.extend([HumanMessage(content=user_query), AIMessage(content=answer)])
 

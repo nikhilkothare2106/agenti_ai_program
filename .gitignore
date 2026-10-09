@@ -223,3 +223,6 @@ milvus_db
 *.db
 *.csv
 *.md
+
+project/week3
+autogen

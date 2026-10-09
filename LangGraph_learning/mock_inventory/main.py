@@ -10,9 +10,9 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.types import RetryPolicy, Command
 
-from chat_state import ChatState
-from file_tools import tools
-from hitl import approval_node
+from langgraph_learning.mock_inventory.chat_state import ChatState
+from langgraph_learning.mock_inventory.file_tools import tools
+from langgraph_learning.mock_inventory.hitl import approval_node
 from model_config import model as llm
 
 MAX_TURNS = 5

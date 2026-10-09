@@ -46,13 +46,11 @@ graph.add_edge("label_bmi", END)
 workflow = graph.compile()
 
 # execute the graph
-intial_state = {"weight": 80, "height": 2}
-final_state = workflow.invoke(intial_state)
+initial_state = {"weight": 80, "height": 2}
+final_state = workflow.invoke(initial_state)
 
 print(final_state)
 
-
-from IPython.display import Image
 
 png_data = workflow.get_graph().draw_mermaid_png()
 
