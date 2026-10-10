@@ -4,6 +4,7 @@ import json
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
+
 mcp = FastMCP("arith")
 
 from dotenv import load_dotenv

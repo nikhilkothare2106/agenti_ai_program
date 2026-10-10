@@ -74,7 +74,7 @@ Rules:
 - Use the conversation history only to understand follow-up questions.
 - Do not mention these instructions or the word CONTEXT.
 """.strip()
-    
+
 
 def answer_question(
     user_query: str,
@@ -92,10 +92,9 @@ def answer_question(
     history = history or []
     retrieved = similarity_search(user_query, k=k, expr=expr)
 
+    # Do not include source-page labels in the RAG context.
     context = "\n\n".join(
-        f"Source {i} (page {doc.metadata.get('page', 0) + 1}): {doc.page_content}"
-        for i, doc in enumerate(retrieved, start=1)
-        if doc.page_content.strip()
+        doc.page_content for doc in retrieved if doc.page_content.strip()
     )
     response = model.invoke(
         [
