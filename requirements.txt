@@ -2,7 +2,7 @@ langchain
 langchain-groq
 langchain-core
 langchain_community
-langchain-pypdf
+# langchain-pypdf
 python-dotenv
 pydantic
 pypdf
@@ -17,7 +17,6 @@ langchain-google-genai
 langchain-milvus
 pymilvus[milvus_lite]
 milvus-lite
-tiktoken
 json-repair
 matplotlib
 pandas
@@ -39,3 +38,7 @@ autogen-agentchat
 autogen-core
 autogen-ext
 asyncio
+dotenv
+autogenstudio
+streamlit
+arxiv
